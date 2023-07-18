@@ -26,7 +26,7 @@ class Texto
     respuesta = gets.chomp.downcase
 
     if respuesta == "s"
-      archivo = File.join(File.dirname(__FILE__), "Metamorfosis.txt")
+      archivo = File.join(File.dirname(__FILE__), "Psicologia_Revolucionaria.txt")
     else
       puts "Ingrese la ruta del archivo:"
       archivo = gets.chomp
@@ -261,3 +261,4 @@ if Autenticar.autenticar(usuario_ingresado, contrasena_ingresada)
     puts "Opción de algoritmo no válida."
   end
 end
+
