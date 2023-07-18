@@ -110,7 +110,6 @@ function registrarTexto($usuario) {
 
     mostrarMenu($usuario);
 }
-// Funciones de búsqueda
 
 function buscarPalabraFuerzaBruta($texto, $palabra) {
     $ocurrencias = array();
@@ -176,6 +175,39 @@ function buscarPalabraKMP($texto, $palabra) {
     return $ocurrencias;
 }
 
+
+
+// Función de búsqueda de Boyer-Moore
+function buscarPalabraBoyerMoore($texto, $palabra) {
+    $ocurrencias = array();
+    $textoLength = strlen($texto);
+    $palabraLength = strlen($palabra);
+    $tablaSaltos = calcularTablaSaltos($palabra);
+    $i = $palabraLength - 1;
+
+    while ($i < $textoLength) {
+        $j = $palabraLength - 1;
+        $k = $i;
+
+        while ($j >= 0 && $texto[$k] === $palabra[$j]) {
+            $k--;
+            $j--;
+        }
+
+        if ($j === -1) {
+            // Se encontró una ocurrencia de la palabra
+            $ocurrencias[] = $k + 1;
+            $i += $palabraLength;
+        } else {
+            $salto = isset($tablaSaltos[$texto[$k]]) ? $tablaSaltos[$texto[$k]] : $palabraLength;
+            $i += $salto;
+        }
+    }
+
+    return $ocurrencias;
+}
+
+// Función para calcular la tabla de saltos de Boyer-Moore
 function calcularTablaSaltos($palabra) {
     $tabla = array();
     $length = strlen($palabra);
@@ -185,47 +217,6 @@ function calcularTablaSaltos($palabra) {
     }
 
     return $tabla;
-}
-
-function buscarPalabraBoyerMoore($texto, $palabra) {
-    $ocurrencias = array();
-    $textoLength = strlen($texto);
-    $palabraLength = strlen($palabra);
-    $tablaSaltos = calcularTablaSaltos($palabra);
-    $i = $palabraLength - 1;
-    $j = $palabraLength - 1;
-
-    while ($i < $textoLength) {
-        if ($texto[$i] === $palabra[$j]) {
-            if ($j === 0) {
-                $ocurrencias[] = $i;
-                $i += $palabraLength;
-                $j = $palabraLength - 1;
-            } else {
-                $i--;
-                $j--;
-            }
-        } else {
-            $salto = isset($tablaSaltos[$texto[$i]]) ? $tablaSaltos[$texto[$i]] : $palabraLength;
-            $i += max($salto, 1); // Ajuste realizado aquí
-            $j = $palabraLength - 1;
-        }
-
-        // Verificar si se ha alcanzado el final del texto
-        if ($i >= $textoLength) {
-            break;
-        }
-    }
-
-    return $ocurrencias;
-}
-
-function obtenerContextoTexto($texto, $inicio, $longitudContexto = 50) {
-    $textoLength = strlen($texto);
-    $inicioContexto = max(0, $inicio - $longitudContexto);
-    $finContexto = min($textoLength - 1, $inicio + $longitudContexto);
-    $contexto = substr($texto, $inicioContexto, $finContexto - $inicioContexto + 1);
-    return $contexto;
 }
 
 // Función para buscar una palabra u oración
@@ -347,3 +338,4 @@ function verHistorial($usuario) {
 // Inicio del programa
 echo "Sistema de Registro y Búsqueda\n";
 ingresarAlSistema();
+
