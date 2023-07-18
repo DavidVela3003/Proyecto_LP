@@ -110,6 +110,18 @@ function registrarTexto($usuario) {
 
     mostrarMenu($usuario);
 }
+function obtenerContextoTexto($texto, $inicio) {
+    $contextoLongitud = 20; // Longitud del contexto a mostrar antes y después del inicio
+
+    $textoLongitud = strlen($texto);
+    $inicioContexto = max(0, $inicio - $contextoLongitud);
+    $finContexto = min($textoLongitud, $inicio + $contextoLongitud);
+
+    $contexto = substr($texto, $inicioContexto, $finContexto - $inicioContexto);
+
+    return $contexto;
+}
+
 
 function buscarPalabraFuerzaBruta($texto, $palabra) {
     $ocurrencias = array();
@@ -338,4 +350,3 @@ function verHistorial($usuario) {
 // Inicio del programa
 echo "Sistema de Registro y Búsqueda\n";
 ingresarAlSistema();
-
