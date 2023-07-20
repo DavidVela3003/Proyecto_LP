@@ -13,7 +13,6 @@ class Autenticar
   end
 end
 
-
 class Texto
   def self.leer_texto(ruta_archivo)
     contenido = File.read(ruta_archivo)
@@ -131,43 +130,80 @@ class Texto
     indices
   end
 
-  def self.calcular_tiempo_ejecucion(palabra_ingresada, ruta_archivo)
-    palabra = palabra_ingresada # Palabra de ejemplo para realizar la búsqueda
+  # ... (código anterior)
 
-    start_time = Time.now
-    buscar_fuerza_bruta(palabra, ruta_archivo)
+def self.calcular_tiempo_ejecucion(palabra_ingresada, ruta_archivo)
+  palabra = palabra_ingresada
+
+  puts "¿Qué algoritmo desea usar?"
+  puts "Si es 'FUERZA BRUTA', ingrese 1."
+  puts "Si es 'KNUTH-MORRIS-PRATT', ingrese 2."
+  puts "Si es 'BOYER-MOORE', ingrese 3: "
+  algoritmo_usado = gets.chomp
+
+  start_time = Time.now
+
+  if algoritmo_usado == "1"
+    resultados_fuerza_bruta = buscar_fuerza_bruta(palabra, ruta_archivo)
     fuerza_bruta_time = Time.now - start_time
 
-    start_time = Time.now
-    buscar_knuth_boyer_pratt(palabra, ruta_archivo)
+    puts "Coincidencias encontradas usando Fuerza Bruta: #{resultados_fuerza_bruta}"
+    puts "Tiempo de ejecución (Fuerza Bruta): #{fuerza_bruta_time} segundos"
+
+    datos_historial = {
+      palabra: palabra_ingresada,
+      metodo: "Fuerza Bruta",
+      repeticiones: resultados_fuerza_bruta.length,
+      tiempo: fuerza_bruta_time
+    }
+
+    Historial.modificar_historial(datos_historial[:palabra], datos_historial[:metodo], datos_historial[:repeticiones], datos_historial[:tiempo])  # Agregar al historial
+
+  elsif algoritmo_usado == "2"
+    resultados_knuth_boyer_pratt = buscar_knuth_boyer_pratt(palabra, ruta_archivo)
     knuth_boyer_pratt_time = Time.now - start_time
 
-    start_time = Time.now
-    buscar_boyer_moore(palabra, ruta_archivo)
+    puts "Coincidencias encontradas usando Knuth-Morris-Pratt: #{resultados_knuth_boyer_pratt}"
+    puts "Tiempo de ejecución (Knuth-Morris-Pratt): #{knuth_boyer_pratt_time} segundos"
+
+    datos_historial = {
+      palabra: palabra_ingresada,
+      metodo: "Knuth-Morris-Pratt",
+      repeticiones: resultados_knuth_boyer_pratt.length,
+      tiempo: knuth_boyer_pratt_time
+    }
+
+    Historial.modificar_historial(datos_historial[:palabra], datos_historial[:metodo], datos_historial[:repeticiones], datos_historial[:tiempo])  # Agregar al historial
+
+  elsif algoritmo_usado == "3"
+    resultados_boyer_moore = buscar_boyer_moore(palabra, ruta_archivo)
     boyer_moore_time = Time.now - start_time
 
-    {
-      fuerza_bruta: fuerza_bruta_time,
-      knuth_boyer_pratt: knuth_boyer_pratt_time,
-      boyer_moore: boyer_moore_time
+    puts "Coincidencias encontradas usando Boyer-Moore: #{resultados_boyer_moore}"
+    puts "Tiempo de ejecución (Boyer-Moore): #{boyer_moore_time} segundos"
+
+    datos_historial = {
+      palabra: palabra_ingresada,
+      metodo: "Boyer-Moore",
+      repeticiones: resultados_boyer_moore.length,
+      tiempo: boyer_moore_time
     }
+
+    Historial.modificar_historial(datos_historial[:palabra], datos_historial[:metodo], datos_historial[:repeticiones], datos_historial[:tiempo])  # Agregar al historial
+
+  else
+    puts "Opción de algoritmo no válida."
   end
+end
+
+# ... (código posterior)
+
 end
 
 class Historial
   def self.modificar_historial(palabra, metodo, repeticiones, tiempo)
     contenido_actual = File.read("Historial.txt")
     nueva_linea = "Palabra: #{palabra}, Método: #{metodo}, Repeticiones: #{repeticiones}, Tiempo: #{tiempo} segundos\n"
-    nuevo_contenido = nueva_linea + contenido_actual
-    File.write("Historial.txt", nuevo_contenido)
-  end
-
-
-
-  def self.modificar_historial(palabra)
-    contenido_actual = File.read("Historial.txt")
-    nueva_linea = "Palabra: #{palabra[:palabra]}, Método: #{palabra[:metodo]}, Repeticiones: #{palabra[:repeticiones]}, Tiempo: #{palabra[:tiempo]} segundos\n"
-
     nuevo_contenido = nueva_linea + contenido_actual
     File.write("Historial.txt", nuevo_contenido)
   end
@@ -195,70 +231,5 @@ if Autenticar.autenticar(usuario_ingresado, contrasena_ingresada)
 
   ruta_archivo = Texto.obtener_ruta_archivo
 
-  start_time = Time.now
-
-  puts "¿Qué algoritmo desea usar?"
-  puts "Si es 'FUERZA BRUTA', ingrese 1."
-  puts "Si es 'KNUTH-MORRIS-PRATT', ingrese 2."
-  puts "Si es 'BOYER-MOORE', ingrese 3: "
-  algoritmo_usado = gets.chomp
-
-  if algoritmo_usado == "1"
-    resultados = Texto.buscar_fuerza_bruta(palabra_ingresada, ruta_archivo)
-    puts "Coincidencias encontradas usando Fuerza Bruta: #{resultados}"
-    fuerza_bruta_time = Time.now - start_time
-    puts "Tiempos de ejecución:"
-    puts "Fuerza Bruta: #{fuerza_bruta_time} segundos"
-
-    datos_historial = {
-      palabra: palabra_ingresada,
-      metodo: "Fuerza Bruta",
-      repeticiones: resultados.length,
-      tiempo: fuerza_bruta_time
-    }
-
-    Historial.modificar_historial(datos_historial)  # Agregar al historial
-
-    puts "La palabra '#{palabra_ingresada}' se repite #{resultados.length} veces."
-
-  elsif algoritmo_usado == "2"
-    resultados = Texto.buscar_knuth_boyer_pratt(palabra_ingresada, ruta_archivo)
-    puts "Coincidencias encontradas usando Knuth-Morris-Pratt: #{resultados}"
-    knuth_boyer_pratt_time = Time.now - start_time
-    puts "Tiempos de ejecución:"
-    puts "Knuth-Morris-Pratt: #{knuth_boyer_pratt_time} segundos"
-
-    datos_historial = {
-      palabra: palabra_ingresada,
-      metodo: "Knuth-Morris-Pratt",
-      repeticiones: resultados.length,
-      tiempo: knuth_boyer_pratt_time
-    }
-
-    Historial.modificar_historial(datos_historial)  # Agregar al historial
-
-    puts "La palabra '#{palabra_ingresada}' se repite #{resultados.length} veces."
-
-  elsif algoritmo_usado == "3"
-    resultados = Texto.buscar_boyer_moore(palabra_ingresada, ruta_archivo)
-    puts "Coincidencias encontradas usando Boyer-Moore: #{resultados}"
-    boyer_moore_time = Time.now - start_time
-    puts "Tiempos de ejecución:"
-    puts "Boyer-Moore: #{boyer_moore_time} segundos"
-
-    datos_historial = {
-      palabra: palabra_ingresada,
-      metodo: "Boyer-Moore",
-      repeticiones: resultados.length,
-      tiempo: boyer_moore_time
-    }
-
-    Historial.modificar_historial(datos_historial)  # Agregar al historial
-
-    puts "La palabra '#{palabra_ingresada}' se repite #{resultados.length} veces."
-
-  else
-    puts "Opción de algoritmo no válida."
-  end
+  Texto.calcular_tiempo_ejecucion(palabra_ingresada, ruta_archivo)
 end
-
